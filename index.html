@@ -158,7 +158,7 @@ function ped(){const gs=desc(S.growth,"t");
  <h2>Exportar resumen</h2><div class="card"><pre>${esc(report())}</pre><div class="grid"><button class="btn" data-a="share">Compartir</button><button class="btn ghost" data-a="copy">Copiar</button></div></div>`}
 
 function rem(){const c=S.cfg;
- return`<h1>Avisos</h1><p class="sub">Recordatorios</p>${fam()}
+ return`<h1>Avisos</h1><p class="sub">Recordatorios</p>${fam()}${bk()}
  <div class="alert">ℹ️ <span>En la versión web los avisos aparecen aquí mientras la app está abierta. Para alarmas con la app cerrada, usa Reloj o Calendario del iPhone (la versión nativa lo hará sola).</span></div>
  ${alerts()}
  <div class="card"><b>🍼 Próxima toma</b><label>Recordar cada…</label><div class="seg" style="margin-top:6px">${[2,3,4].map(h=>`<button data-a="every" data-v="${h}" class="${c.every===h?"on":""}">${h} h</button>`).join("")}</div></div>
@@ -166,6 +166,30 @@ function rem(){const c=S.cfg;
  <div class="card"><b>📅 Cita médica</b><label>Fecha y hora</label><input type="datetime-local" data-c="appt" value="${c.appt}"><label>Nota</label><input data-c="apptNote" placeholder="ej. control de 1 mes" value="${esc(c.apptNote)}" style="margin-bottom:0"></div>`}
 
 function memo(){const ms=desc(S.memos,'t');return`<h1>Notas</h1><p class="sub">Para los dos</p><div class="card"><label>Nueva nota</label><textarea id="m-t" rows="4" placeholder="Escribe algo para recordar…"></textarea><button class="btn" data-a="madd">Guardar nota</button></div>${ms.length?ms.map(m=>`<div class="card"><div style="white-space:pre-wrap">${esc(m.text)}</div><div class="row sp" style="margin-top:8px"><span class="mut">${fdt(m.t)}</span><span><button class='x' data-a='edit' data-ty='memos' data-id='${m.id}' aria-label='Editar'>✏️</button><button class="x" data-a="del" data-ty="memos" data-id="${m.id}" aria-label="Borrar">🗑</button></span></div></div>`).join(''):'<p class="mut">Aún no hay notas.</p>'}`}
+const COLS=['feeds','diapers','sleeps','growth','notes','memos'];
+const LBL={feeds:'Tomas',diapers:'Pañales',sleeps:'Siestas',growth:'Mediciones',notes:'Dudas',memos:'Notas'};
+let BKMSG='';
+const LB=()=>{try{return JSON.parse(localStorage.getItem('milan:lastbk')||'null')}catch(e){return null}};
+const snap=()=>({app:'milan',version:1,created:new Date().toISOString(),family:(localStorage.getItem('milan:fam')||null),synced:SYNC==='on',
+ data:{...Object.fromEntries(COLS.map(c=>[c,S[c]])),vax:S.vax.map((v,i)=>({id:'v'+i,name:v.n,done:v.done})),cfg:S.cfg,timer:S.timer,seen:S.seen},
+ deviceOnly:COLS.some(c=>LOCAL[c].length)?Object.fromEntries(COLS.map(c=>[c,LOCAL[c]])):null});
+const bk=()=>{const lb=LB();return`<div class="card"><b>🛟 Copia de seguridad</b>
+<p class="mut" style="margin:6px 0">Datos que tiene la app ahora:</p>
+<div style="font-size:14px;line-height:1.7">${COLS.map(c=>`${LBL[c]}: <b>${S[c].length}</b>`).join(' · ')} · Vacunas: <b>${S.vax.filter(v=>v.done).length}/${S.vax.length}</b></div>
+${SYNC==='on'?'':'<p class="mut" style="margin:6px 0">⚠️ Sin sincronizar: la copia solo incluirá lo guardado en este teléfono.</p>'}
+<p class="mut" style="margin:8px 0">${lb?'Última copia: '+rel(lb.t)+' ('+lb.n+' registros)':'Todavía no hay copias hechas desde este teléfono.'}</p>
+<button class="btn" data-a="bkdl" style="margin-bottom:10px">Descargar copia (.json)</button>
+<label class="btn ghost" style="display:block;text-align:center;margin-bottom:10px">Verificar una copia<input type="file" accept=".json,application/json" data-f="bkver" hidden></label>
+<label class="btn ghost" style="display:block;text-align:center">Restaurar (solo agrega lo que falte)<input type="file" accept=".json,application/json" data-f="bkres" hidden></label>
+${BKMSG?`<pre style="margin-top:10px">${esc(BKMSG)}</pre>`:''}</div>`};
+document.addEventListener('change',async e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f||!t.files[0])return;let d;
+ try{d=JSON.parse(await t.files[0].text());if(d.app!=='milan'||!d.data)throw 0}catch(x){BKMSG='Ese archivo no es una copia de Milán.';t.value='';render();return}
+ t.value='';
+ if(f==='bkver'){BKMSG='Copia del '+new Date(d.created).toLocaleString('es')+'\n'+COLS.map(c=>{const A=new Set((d.data[c]||[]).map(x=>String(x.id))),B=new Set(S[c].map(x=>String(x.id))),a=[...A].filter(i=>!B.has(i)).length,b=[...B].filter(i=>!A.has(i)).length;return LBL[c]+': copia '+A.size+' · app '+B.size+(a||b?' ⚠️ ('+a+' solo en la copia, '+b+' solo en la app)':' ✓')}).join('\n')}
+ else{let n=0;COLS.forEach(c=>{const have=new Set(S[c].map(x=>String(x.id)));(d.data[c]||[]).forEach(r=>{if(!have.has(String(r.id))){put(c,r);n++}})});
+  (d.data.vax||[]).forEach((v,i)=>{if(v.done&&S.vax[i]&&!S.vax[i].done){S.vax[i].done=true;if(DB)wr(DB.doc('vax/v'+i).set({done:true}));n++}});
+  BKMSG='Restauración: '+n+' registros agregados. No se modificó ni borró nada de lo que ya existía.'}
+ go()});
 const FAM=localStorage.getItem('milan:fam')||'';
 const fam=()=>`<div class="card"><b>👨‍👩‍👦 Código familiar</b><p class="mut" style="margin:6px 0">Es la llave para compartir los datos entre sus teléfonos. No se lo des a nadie más.</p>${FAM?`<pre style="user-select:all;word-break:break-all">${esc(FAM)}</pre><button class="btn ghost" data-a="famcopy" style="margin-bottom:10px">Copiar código</button>`:''}<label>${FAM?'Usar otro código':'¿Tu pareja ya creó el código? Pégalo aquí'}</label><input id="fam-in" placeholder="Pega el código" autocapitalize="off" autocorrect="off"><div class="grid"><button class="btn ghost" data-a="famset">Usar este</button><button class="btn" data-a="famnew">${FAM?'Crear nuevo':'Crear código'}</button></div></div>`;
 let EDIT=null;
@@ -209,6 +233,11 @@ const H={
   else if(c==='growth'){n.kg=+v('e-kg')||'—';n.cm=+v('e-cm')||'—';n.t=v('e-d')?new Date(v('e-d')+'T12:00').getTime():r.t}
   else{const t=v('e-t').trim();if(!t)return;n.text=t}
   put(c,n);EDIT=null;go()},
+ bkdl:async()=>{const d=snap(),txt=JSON.stringify(d,null,1),name='milan-copia-'+loc(Date.now()).slice(0,10)+'.json',n=COLS.reduce((a,c)=>a+S[c].length,0);let ok=false;
+  try{const f=new File([txt],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:name});ok=true}}catch(e){if(e&&e.name==='AbortError')return}
+  if(!ok){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();ok=true}catch(e){toast('No se pudo generar la copia');return}}
+  try{localStorage.setItem('milan:lastbk',JSON.stringify({t:Date.now(),n}))}catch(e){}
+  BKMSG='Copia generada: '+n+' registros ('+COLS.map(c=>LBL[c]+' '+S[c].length).join(', ')+'). Guárdala en Archivos o iCloud y luego usa «Verificar una copia» para comprobarla.';render()},
  famset:()=>{const v=$('#fam-in').value.trim().replace(/[^\w-]/g,'');if(v.length<12){toast('El código debe tener al menos 12 caracteres');return}localStorage.setItem('milan:fam',v);location.reload()},
  famnew:()=>{if(FAM&&!confirm('Se creará un código nuevo y dejarán de compartir datos con el anterior. ¿Continuar?'))return;const a=crypto.getRandomValues(new Uint8Array(20));localStorage.setItem('milan:fam',[...a].map(x=>x.toString(36).padStart(2,'0')).join(''));location.reload()},
  famcopy:async b=>{try{await navigator.clipboard.writeText(FAM);b.textContent='¡Copiado!'}catch(e){b.textContent='Mantén pulsado el código para copiarlo'}},
