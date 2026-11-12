@@ -7,17 +7,17 @@
 <meta name="apple-mobile-web-app-title" content="Milán">
 <title>Milán</title>
 <style>
-:root{--bg:#f3f6f8;--card:#fff;--ink:#33407a;--mut:#6b7392;--acc:#5b94bf;--line:#e3e8ee;--soft:#e4f0f5;--warn:#fdf1d8;
+:root{--bg:#F7F8FA;--card:#FFFFFF;--ink:#344A82;--mut:#78839D;--acc:#344A82;--btn:#344A82;--line:#E6EAF0;--soft:#E8F1F7;--warn:#F9EACB;--ok:#83B8A5;--bad:#D9777A;--sh:0 2px 12px rgba(52,74,130,.08);
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11151f;--card:#1b2130;--ink:#e8ecf7;--mut:#9aa3b8;--acc:#7fb3dc;--line:#2a3145;--soft:#243049;--warn:#3a3220}}
-:root[data-theme="dark"]{--bg:#11151f;--card:#1b2130;--ink:#e8ecf7;--mut:#9aa3b8;--acc:#7fb3dc;--line:#2a3145;--soft:#243049;--warn:#3a3220}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1526;--card:#172138;--ink:#E6ECFA;--mut:#93A0BD;--acc:#8FB0EA;--btn:#4C6CB8;--line:#26324D;--soft:#22304D;--warn:#3A3322;--ok:#6FA391;--bad:#E08A8D;--sh:0 2px 12px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#0E1526;--card:#172138;--ink:#E6ECFA;--mut:#93A0BD;--acc:#8FB0EA;--btn:#4C6CB8;--line:#26324D;--soft:#22304D;--warn:#3A3322;--ok:#6FA391;--bad:#E08A8D;--sh:0 2px 12px rgba(0,0,0,.35)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px 16px 96px;max-width:560px;margin:0 auto}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:16px 16px 96px;max-width:560px;margin:0 auto}
 h1{font:700 36px/1.1 ui-rounded,-apple-system,sans-serif;margin:8px 0 2px}
 h2{font-size:17px;margin:18px 0 8px}
 .sub{color:var(--mut);margin:0 0 16px;font-size:18px}
-.card{background:var(--card);border-radius:20px;padding:16px;margin-bottom:12px}
+.card{background:var(--card);border-radius:22px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
 .mut{color:var(--mut);font-size:14px}
 .clock{font:600 60px/1 ui-rounded,-apple-system,sans-serif;font-variant-numeric:tabular-nums;text-align:center;margin:14px 0}
 .row{display:flex;gap:10px;align-items:center}.c{justify-content:center}.sp{justify-content:space-between}
@@ -26,14 +26,14 @@ h2{font-size:17px;margin:18px 0 8px}
 .seg button{flex:1;border:0;background:none;color:var(--ink);padding:9px 4px;border-radius:10px;font:inherit;font-size:15px}
 .seg button.on{background:var(--card);box-shadow:0 1px 3px #0002;font-weight:600}
 .seg.dis{opacity:.5;pointer-events:none}
-.btn{border:0;background:var(--acc);color:#fff;border-radius:14px;padding:12px 18px;font:inherit;font-weight:600;width:100%}
+.btn{border:0;background:var(--btn);color:#fff;border-radius:16px;padding:14px 18px;min-height:52px;font:inherit;font-weight:600;width:100%;transition:transform .12s,opacity .2s}.btn:active,.round:active,.tile:active{transform:scale(.97)}
 .btn.ghost{background:var(--soft);color:var(--ink)}
-.round{width:76px;height:76px;border-radius:50%;border:0;background:var(--acc);color:#fff;font-size:30px}
-.round.s{width:52px;height:52px;font-size:20px;background:var(--soft);color:var(--ink)}.round.g{background:#34a853;color:#fff}
-.tile{text-align:left;border:0;width:100%;background:var(--card);color:var(--ink);border-radius:20px;padding:14px;font:inherit}
+.round{width:76px;height:76px;border-radius:50%;border:0;background:var(--btn);color:#fff;font-size:30px}
+.round.s{width:52px;height:52px;font-size:20px;background:var(--soft);color:var(--ink)}.round.g{background:var(--ok);color:#fff}
+.tile{text-align:left;border:0;width:100%;background:var(--card);color:var(--ink);border-radius:22px;padding:14px;font:inherit;box-shadow:var(--sh)}
 .tile b{display:block;font-size:19px;margin:2px 0}.tile span{font-size:13px;color:var(--mut)}
 .alert{background:var(--warn);border-radius:14px;padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:15px}
-.mini{border:0;background:var(--acc);color:#fff;border-radius:10px;padding:6px 12px;font:inherit}
+.mini{border:0;background:var(--btn);color:#fff;border-radius:10px;padding:6px 12px;font:inherit}
 input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin:4px 0 10px}
 label{font-size:13px;color:var(--mut)}
 .item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
@@ -43,7 +43,8 @@ label{font-size:13px;color:var(--mut)}
 pre{white-space:pre-wrap;font:13px/1.4 ui-monospace,monospace;background:var(--bg);border-radius:12px;padding:12px;margin:0 0 10px}
 nav{position:fixed;left:0;right:0;bottom:0;top:auto;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px))}
 nav button{flex:1;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px}
-nav button span{font-size:22px}nav button.on{color:var(--acc);font-weight:600}
+nav button span{display:grid;place-items:center;width:58px;height:32px;border-radius:16px;transition:background .2s}nav button.on span{background:var(--soft)}
+#app.fx{animation:fin .25s ease}@keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){#app.fx{animation:none}}nav button.on{color:var(--acc);font-weight:600}
 .done{text-decoration:line-through;color:var(--mut)}
 #toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:14px;padding:12px;text-align:center;font-size:14px;z-index:30}
 .sheet{position:fixed;inset:0;background:#0007;z-index:20;display:flex;align-items:flex-end;justify-content:center}
@@ -64,7 +65,7 @@ const K="milan:v1";
 const LOGO="data:image/jpeg;base64,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";
 
 const VAX=[["BCG","Al nacer"],["Hepatitis B","Al nacer"],["Hexavalente (1ª dosis)","2 meses"],["Neumococo (1ª dosis)","2 meses"],["Rotavirus (1ª dosis)","2 meses"],["Hexavalente (2ª dosis)","4 meses"],["Neumococo (2ª dosis)","4 meses"],["Rotavirus (2ª dosis)","4 meses"]];
-const def=()=>({feeds:[],diapers:[],sleeps:[],growth:[],notes:[],memos:[],vax:VAX.map(([n,age])=>({n,age,done:false})),
+const def=()=>({feeds:[],diapers:[],sleeps:[],growth:[],notes:[],memos:[],profile:{name:'Milán',birth:'',photo:''},vax:VAX.map(([n,age])=>({n,age,done:false})),
  timer:{side:"L",acc:0,at:null,start:null},cfg:{every:3,d3on:false,d3:"09:00",appt:"",apptNote:""},seen:{}});
 let S;try{S=Object.assign(def(),JSON.parse(localStorage.getItem(K)||"{}"))}catch(e){S=def()}
 const LOCAL=JSON.parse(JSON.stringify(S));
@@ -92,38 +93,48 @@ const isToday=ts=>new Date(ts).toDateString()===new Date().toDateString();
 const sod=()=>{const d=new Date();d.setHours(0,0,0,0);return d.getTime()};
 const greet=()=>{const h=new Date().getHours();return h>=5&&h<12?"Buenos días ☀️":h<20?"Buenas tardes 🌤️":"Buenas noches 🌙"};
 const DK={pee:["💧","Pipí"],poop:["💩","Popó"],both:["💧💩","Ambos"]};
-const feedTxt=f=>f.kind==="breast"?"Pecho "+(f.side==="L"?"izq.":"der.")+" · "+spoken(f.dur):"Biberón · "+f.ml+" ml";
+const feedTxt=f=>f.kind==="breast"?(f.side==="B"?"Ambos pechos · izq. "+spoken(f.dL||0)+" · der. "+spoken(f.dR||0):"Pecho "+(f.side==="L"?"izq.":"der.")+" · "+spoken(f.dur)):"Biberón · "+f.ml+" ml";
 
 // ---- estado de UI
 let T=localStorage.getItem('milan:fam')?"home":"rem",RS="feed",RK="breast",RSIDE="L",DKS="pee",QD=false;
 
 // ---- cronómetro (persistente)
-const el=()=>{const t=S.timer;return t.acc+(t.at?(Date.now()-t.at)/1000:0)};
+
 const tPause=()=>{const t=S.timer;if(t.at){t.acc=el();t.at=null}};
 const tReset=()=>{S.timer={side:S.timer.side,acc:0,at:null,start:null}};
 const sleepToday=()=>S.sleeps.reduce((a,s)=>a+Math.max(0,Math.min(s.e||Date.now(),Date.now())-Math.max(s.s,sod())),0)/1000;
 
 function alerts(){const o=[],now=Date.now(),c=S.cfg,lf=desc(S.feeds,"t")[0];
- if(lf){const nx=lf.t+c.every*36e5;o.push(now>=nx?"🍼 Ya pasaron "+c.every+" h desde la última toma":"🍼 Próxima toma hacia las "+hm(nx))}
  if(c.d3on){const[h,m]=c.d3.split(":").map(Number),d=new Date();d.setHours(h,m,0,0);if(now>=d.getTime()&&!S.seen[loc(now).slice(0,10)])o.push("<span>💊 Vitamina D3 de hoy</span><button class=mini data-a=d3done>Hecho</button>")}
  if(c.appt){const t=new Date(c.appt).getTime();if(t>now&&t-now<864e5)o.push("📅 Cita médica"+(c.apptNote?" · "+esc(c.apptNote):"")+" — "+fdt(t))}
  return o.map(x=>'<div class="alert">'+x+"</div>").join("")}
 
-function home(){const t=S.timer,sess=t.start!=null,lb=desc(S.feeds.filter(f=>f.kind==="breast"),"t")[0],lf=desc(S.feeds,"t")[0],ld=desc(S.diapers,"t")[0],os=S.sleeps.find(s=>!s.e);
- return`<div class="row" style="margin:8px 0 16px"><img src="${LOGO}" alt="" width="56" height="56" style="border-radius:14px"><div><h1 style="margin:0">Milán</h1><p class="sub" style="margin:0">${greet()}</p></div></div>${alerts()}
- <div class="card"><b>❤️ Lactancia</b>
- <div class="seg ${sess?"dis":""}" style="margin-top:12px"><button data-a="side" data-v="L" class="${t.side==="L"?"on":""}">Izquierdo</button><button data-a="side" data-v="R" class="${t.side==="R"?"on":""}">Derecho</button></div>
+let PROF=false;
+const saveProf=()=>{if(DB)wr(DB.doc('meta/profile').set(S.profile));else save()};
+const avatar=n=>S.profile.photo?`<img src="${S.profile.photo}" width="${n}" height="${n}" alt="" style="border-radius:50%;object-fit:cover;display:block">`:`<div style="width:${n}px;height:${n}px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:700;color:var(--ink);font-size:${Math.round(n*.45)}px">${esc((S.profile.name||'M')[0].toUpperCase())}</div>`;
+const age=()=>{const b=S.profile.birth;if(!b)return'';const B=new Date(b+'T12:00'),d=Math.floor((Date.now()-B.getTime())/864e5);if(d<0)return'';if(d<14)return d+(d===1?' día':' días');if(d<70)return Math.floor(d/7)+' semanas';const n=new Date();let m=(n.getFullYear()-B.getFullYear())*12+n.getMonth()-B.getMonth();if(n.getDate()<B.getDate())m--;return m<24?m+(m===1?' mes':' meses'):Math.floor(m/12)+' años'};
+const setAvatar=async file=>{try{const img=new Image();img.src=URL.createObjectURL(file);await img.decode();const z=320,s=Math.min(img.naturalWidth,img.naturalHeight),c=document.createElement('canvas');c.width=c.height=z;c.getContext('2d').drawImage(img,(img.naturalWidth-s)/2,(img.naturalHeight-s)/2,s,s,0,0,z,z);S.profile.photo=c.toDataURL('image/jpeg',.8);saveProf();render(true)}catch(e){toast('No se pudo cargar la foto')}};
+const profSheet=()=>{if(!PROF)return'';const p=S.profile;return`<div class='sheet'><div><b>Perfil de ${esc(p.name||'Milán')}</b><div class='row c' style='margin:12px 0'>${avatar(80)}</div><label class='btn ghost' style='display:block;text-align:center;margin-bottom:10px'>Cambiar foto<input type='file' accept='image/*' data-f='avatar' hidden></label><label>Nombre</label><input id='p-n' value='${esc(p.name||'')}'><label>Fecha de nacimiento</label><input id='p-b' type='date' value='${p.birth||''}'><div class='grid'><button class='btn ghost' data-a='pcancel'>Cerrar</button><button class='btn' data-a='psave'>Guardar</button></div></div></div>`};
+const tsec=s=>{const t=S.timer;return (t[s]||0)+(t.side===s?(t.acc||0)+(t.at?(Date.now()-t.at)/1000:0):0)};
+const el=()=>tsec('L')+tsec('R');
+function home(){const t=S.timer,sess=t.start!=null,p=S.profile,now=Date.now(),sd=sod(),fs=S.feeds.filter(x=>x.t>=sd),dp=S.diapers.filter(x=>x.t>=sd),lf=desc(S.feeds,'t')[0],lb=desc(S.feeds.filter(f=>f.kind==='breast'),'t')[0],os=S.sleeps.find(s=>!s.e),hasSl=S.sleeps.some(s=>s.s>=sd||!s.e),
+ wet=dp.filter(x=>x.kind!=='poop').length,dirty=dp.filter(x=>x.kind!=='pee').length,
+ la=desc([...S.feeds.map(x=>({t:x.t,x:feedTxt(x)})),...S.diapers.map(x=>({t:x.t,x:'Pañal · '+DK[x.kind][1]})),...S.sleeps.map(x=>({t:x.e||x.s,x:'Siesta'}))],'t')[0],nx=lf?lf.t+S.cfg.every*36e5:0,
+ nf=lf?(now>=nx?`<b style="font-size:22px">Ya pasaron ${S.cfg.every} h</b><div class="mut">desde la última toma (${hm(lf.t)})</div>`:`<b style="font-size:30px">${hm(nx)}</b><div class="mut">faltan ${spoken((nx-now)/1000)}</div>`):'<b style="font-size:22px">—</b><div class="mut">Registra una toma para ver la estimación</div>',
+ num=(i,l,v)=>`<div class="tile"><span>${ico(i)} ${l}</span><b style="font-size:30px">${v}</b></div>`,
+ side=(k,l)=>`<div class="tile" style="padding:10px;text-align:center;box-shadow:none;background:${t.side===k?'var(--soft)':'var(--bg)'}"><span>${l}</span><b id="t${k}">${clock(tsec(k))}</b></div>`;
+ return`<div class="row" style="gap:12px;margin:6px 0 14px"><button data-a="prof" style="border:0;background:none;padding:0" aria-label="Perfil">${avatar(56)}</button><div><h1 style="margin:0;font-size:30px">${esc(p.name||'Milán')}</h1><p class="sub" style="margin:0;font-size:15px">${greet()}${age()?' · '+age():''}</p></div></div>${alerts()}
+ <div class="card" style="background:var(--warn)"><div class="row sp"><span class="mut">Próxima toma estimada</span><button class="mini" data-a="tab" data-v="rem">Avisos</button></div>${nf}<p class="mut" style="font-size:12px;margin:6px 0 0">Es solo una guía: mandan las señales de hambre de ${esc(p.name||'Milán')} y lo que indique el pediatra.</p></div>
+ <div class="card"><b>Lactancia</b>
+ <div class="seg" style="margin-top:12px"><button data-a="side" data-v="L" class="${t.side==='L'?'on':''}">Izquierdo</button><button data-a="side" data-v="R" class="${t.side==='R'?'on':''}">Derecho</button></div>
  <div class="clock" id="clk">${clock(el())}</div>
- <div class="row c" style="gap:22px">${sess?'<button class="round s" data-a="treset" aria-label="Descartar">✕</button>':""}
- <button class="round" data-a="tgo" aria-label="${t.at?"Pausar":"Iniciar"}">${t.at?"❚❚":"▶"}</button>
- ${sess?'<button class="round s g" data-a="tsave" aria-label="Guardar toma">✓</button>':""}</div>
- <p class="mut" style="margin:16px 0 0">🕘 ${lb?"Última: "+feedTxt(lb)+" · "+rel(lb.t):"Aún no hay tomas registradas"}</p></div>
- <h2>Resumen de hoy</h2><div class="grid">
- <div class="tile"><span>🍼 Última toma</span><b>${lf?rel(lf.t):"—"}</b><span>${lf?feedTxt(lf):"Sin registros"}</span></div>
- <button class="tile" data-a="qd"><span>🧷 Último pañal ＋</span><b>${ld?rel(ld.t):"—"}</b><span>${ld?DK[ld.kind].join(" "):"Toca para registrar"}</span></button></div>
- ${QD?'<div class="card" style="margin-top:12px"><div class="chips" style="margin:0">'+Object.entries(DK).map(([k,v])=>`<button data-a="dq" data-v="${k}">${v[0]}<br>${v[1]}</button>`).join("")+"</div></div>":""}
- <button class="tile" data-a="sleept" style="margin-top:12px"><span>${os?"🌙 Durmiendo ■":"😴 Sueño de hoy ▶"}</span><b>${spoken(sleepToday())}</b><span>${os?"Durmiendo desde las "+hm(os.s)+" · toca para terminar":"Toca para iniciar siesta"}</span></button>`}
-
+ <div class="grid" style="margin-bottom:14px">${side('L','Izq.')}${side('R','Der.')}</div>
+ <div class="row c" style="gap:22px">${sess?'<button class="round s" data-a="treset" aria-label="Descartar">✕</button>':''}<button class="round" data-a="tgo" aria-label="${t.at?'Pausar':'Iniciar'}">${t.at?'❚❚':'▶'}</button>${sess?'<button class="round s g" data-a="tsave" aria-label="Guardar toma">✓</button>':''}</div>
+ <p class="mut" style="margin:16px 0 0">${lb?'Última: '+feedTxt(lb)+' · '+rel(lb.t):'Todavía no hay tomas registradas'}</p></div>
+ <h2>Hoy</h2><div class="grid">${num('heart','Tomas',fs.length)}${num('drop','Mojados',wet)}${num('diaper','Sucios',dirty)}
+ <button class="tile" data-a="sleept"><span>${ico('moon')} Sueño</span><b style="font-size:${hasSl?30:16}px;margin-top:${hasSl?0:8}px">${hasSl?spoken(sleepToday()):'Todavía no hay registros'}</b><span>${os?'Durmiendo desde las '+hm(os.s)+' · toca para terminar':'Toca para iniciar siesta'}</span></button></div>
+ <div class="card" style="margin-top:12px"><b>Registrar pañal</b><div class="chips" style="margin:10px 0 0">${Object.entries(DK).map(([k,v])=>`<button data-a="dq" data-v="${k}">${v[0]}<br>${v[1]}</button>`).join('')}</div></div>
+ <div class="tile" style="margin-top:12px"><span>${ico('clock')} Última actividad</span><b style="font-size:17px">${la?esc(la.x):'Todavía no hay registros'}</b><span>${la?rel(la.t):''}</span></div>`}
 function log(){const sub=`<div class="seg">${[["feed","🍼 Comida"],["diaper","🧷 Pañal"],["sleep","😴 Sueño"]].map(([k,l])=>`<button data-a="rs" data-v="${k}" class="${RS===k?"on":""}">${l}</button>`).join("")}</div>`;
  let f="";
  if(RS==="feed")f=`<div class="chips"><button data-a="rk" data-v="breast" class="${RK==="breast"?"on":""}">Lactancia</button><button data-a="rk" data-v="bottle" class="${RK==="bottle"?"on":""}">Biberón</button></div>
@@ -158,7 +169,7 @@ function ped(){const gs=desc(S.growth,"t");
  <h2>Exportar resumen</h2><div class="card"><pre>${esc(report())}</pre><div class="grid"><button class="btn" data-a="share">Compartir</button><button class="btn ghost" data-a="copy">Copiar</button></div></div>`}
 
 function rem(){const c=S.cfg;
- return`<h1>Avisos</h1><p class="sub">Recordatorios</p>${fam()}${bk()}
+ return`<h1>Avisos</h1><p class="sub">Recordatorios</p>${fam()}${look()}${bk()}
  <div class="alert">ℹ️ <span>En la versión web los avisos aparecen aquí mientras la app está abierta. Para alarmas con la app cerrada, usa Reloj o Calendario del iPhone (la versión nativa lo hará sola).</span></div>
  ${alerts()}
  <div class="card"><b>🍼 Próxima toma</b><label>Recordar cada…</label><div class="seg" style="margin-top:6px">${[2,3,4].map(h=>`<button data-a="every" data-v="${h}" class="${c.every===h?"on":""}">${h} h</button>`).join("")}</div></div>
@@ -166,12 +177,22 @@ function rem(){const c=S.cfg;
  <div class="card"><b>📅 Cita médica</b><label>Fecha y hora</label><input type="datetime-local" data-c="appt" value="${c.appt}"><label>Nota</label><input data-c="apptNote" placeholder="ej. control de 1 mes" value="${esc(c.apptNote)}" style="margin-bottom:0"></div>`}
 
 function memo(){const ms=desc(S.memos,'t');return`<h1>Notas</h1><p class="sub">Para los dos</p><div class="card"><label>Nueva nota</label><textarea id="m-t" rows="4" placeholder="Escribe algo para recordar…"></textarea><button class="btn" data-a="madd">Guardar nota</button></div>${ms.length?ms.map(m=>`<div class="card"><div style="white-space:pre-wrap">${esc(m.text)}</div><div class="row sp" style="margin-top:8px"><span class="mut">${fdt(m.t)}</span><span><button class='x' data-a='edit' data-ty='memos' data-id='${m.id}' aria-label='Editar'>✏️</button><button class="x" data-a="del" data-ty="memos" data-id="${m.id}" aria-label="Borrar">🗑</button></span></div></div>`).join(''):'<p class="mut">Aún no hay notas.</p>'}`}
+const IC={heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',drop:'<path d="M12 3.5s6 6.2 6 10.5a6 6 0 0 1-12 0c0-4.3 6-10.5 6-10.5z"/>',diaper:'<rect x="4" y="6" width="16" height="12" rx="5"/><path d="M9 12h6"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>',
+log:'<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4.5h6M9 10h6M9 14h6M9 18h3"/>',
+ped:'<rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8.5v7M8.5 12h7"/>',
+rem:'<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 21h4"/>',
+memo:'<path d="M6 4h10a2 2 0 0 1 2 2v14H8a2 2 0 0 1-2-2z"/><path d="M6 18a2 2 0 0 1 2-2h10"/>'};
+const ico=k=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k]}</svg>`;
+const TH=()=>localStorage.getItem('milan:theme')||'auto';
+const applyTheme=()=>{const v=TH();if(v==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=v};
+applyTheme();
+const look=()=>`<div class="card"><b>Apariencia</b><div class="seg" style="margin:10px 0 0">${[['auto','Automático'],['light','Claro'],['dark','Nocturno']].map(([k,l])=>`<button data-a="theme" data-v="${k}" class="${TH()===k?'on':''}">${l}</button>`).join('')}</div></div>`;
 const COLS=['feeds','diapers','sleeps','growth','notes','memos'];
 const LBL={feeds:'Tomas',diapers:'Pañales',sleeps:'Siestas',growth:'Mediciones',notes:'Dudas',memos:'Notas'};
 let BKMSG='';
 const LB=()=>{try{return JSON.parse(localStorage.getItem('milan:lastbk')||'null')}catch(e){return null}};
 const snap=()=>({app:'milan',version:1,created:new Date().toISOString(),family:(localStorage.getItem('milan:fam')||null),synced:SYNC==='on',
- data:{...Object.fromEntries(COLS.map(c=>[c,S[c]])),vax:S.vax.map((v,i)=>({id:'v'+i,name:v.n,done:v.done})),cfg:S.cfg,timer:S.timer,seen:S.seen},
+ data:{...Object.fromEntries(COLS.map(c=>[c,S[c]])),vax:S.vax.map((v,i)=>({id:'v'+i,name:v.n,done:v.done})),cfg:S.cfg,timer:S.timer,seen:S.seen,profile:S.profile},
  deviceOnly:COLS.some(c=>LOCAL[c].length)?Object.fromEntries(COLS.map(c=>[c,LOCAL[c]])):null});
 const bk=()=>{const lb=LB();return`<div class="card"><b>🛟 Copia de seguridad</b>
 <p class="mut" style="margin:6px 0">Datos que tiene la app ahora:</p>
@@ -182,7 +203,7 @@ ${SYNC==='on'?'':'<p class="mut" style="margin:6px 0">⚠️ Sin sincronizar: la
 <label class="btn ghost" style="display:block;text-align:center;margin-bottom:10px">Verificar una copia<input type="file" accept=".json,application/json" data-f="bkver" hidden></label>
 <label class="btn ghost" style="display:block;text-align:center">Restaurar (solo agrega lo que falte)<input type="file" accept=".json,application/json" data-f="bkres" hidden></label>
 ${BKMSG?`<pre style="margin-top:10px">${esc(BKMSG)}</pre>`:''}</div>`};
-document.addEventListener('change',async e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f||!t.files[0])return;let d;
+document.addEventListener('change',async e=>{const t=e.target,f=t.dataset&&t.dataset.f;if(!f||!t.files[0])return;if(f==='avatar'){await setAvatar(t.files[0]);t.value='';return}let d;
  try{d=JSON.parse(await t.files[0].text());if(d.app!=='milan'||!d.data)throw 0}catch(x){BKMSG='Ese archivo no es una copia de Milán.';t.value='';render();return}
  t.value='';
  if(f==='bkver'){BKMSG='Copia del '+new Date(d.created).toLocaleString('es')+'\n'+COLS.map(c=>{const A=new Set((d.data[c]||[]).map(x=>String(x.id))),B=new Set(S[c].map(x=>String(x.id))),a=[...A].filter(i=>!B.has(i)).length,b=[...B].filter(i=>!A.has(i)).length;return LBL[c]+': copia '+A.size+' · app '+B.size+(a||b?' ⚠️ ('+a+' solo en la copia, '+b+' solo en la app)':' ✓')}).join('\n')}
@@ -194,24 +215,29 @@ const FAM=localStorage.getItem('milan:fam')||'';
 const fam=()=>`<div class="card"><b>👨‍👩‍👦 Código familiar</b><p class="mut" style="margin:6px 0">Es la llave para compartir los datos entre sus teléfonos. No se lo des a nadie más.</p>${FAM?`<pre style="user-select:all;word-break:break-all">${esc(FAM)}</pre><button class="btn ghost" data-a="famcopy" style="margin-bottom:10px">Copiar código</button>`:''}<label>${FAM?'Usar otro código':'¿Tu pareja ya creó el código? Pégalo aquí'}</label><input id="fam-in" placeholder="Pega el código" autocapitalize="off" autocorrect="off"><div class="grid"><button class="btn ghost" data-a="famset">Usar este</button><button class="btn" data-a="famnew">${FAM?'Crear nuevo':'Crear código'}</button></div></div>`;
 let EDIT=null;
 function editor(){if(!EDIT)return'';const c=EDIT.c,r=S[c].find(x=>String(x.id)===EDIT.id);if(!r)return'';const L=(l,h)=>`<label>${l}</label>${h}`,I=(id,v,t='text',x='')=>`<input id='${id}' type='${t}' value='${esc(v)}' ${x}>`,W=I('e-when',loc(r.t),'datetime-local');let f='';
- if(c==='feeds')f=(r.kind==='breast'?L('Pecho',`<select id='e-side'><option value='L'${r.side==='L'?' selected':''}>Izquierdo</option><option value='R'${r.side==='R'?' selected':''}>Derecho</option></select>`)+L('Duración (minutos)',I('e-min',Math.round(r.dur/60),'number',"inputmode='numeric'")):L('Cantidad (ml)',I('e-ml',r.ml,'number',"inputmode='numeric'")))+L('Cuándo',W);
+ if(c==='feeds'&&r.side==='B')f=L('Izquierdo (min)',I('e-l',Math.round((r.dL||0)/60),'number'))+L('Derecho (min)',I('e-r',Math.round((r.dR||0)/60),'number'))+L('Cuándo',W);
+ else if(c==='feeds')f=(r.kind==='breast'?L('Pecho',`<select id='e-side'><option value='L'${r.side==='L'?' selected':''}>Izquierdo</option><option value='R'${r.side==='R'?' selected':''}>Derecho</option></select>`)+L('Duración (minutos)',I('e-min',Math.round(r.dur/60),'number',"inputmode='numeric'")):L('Cantidad (ml)',I('e-ml',r.ml,'number',"inputmode='numeric'")))+L('Cuándo',W);
  else if(c==='diapers')f=L('Tipo',`<select id='e-kind'>${Object.entries(DK).map(([k,v])=>`<option value='${k}'${r.kind===k?' selected':''}>${v.join(' ')}</option>`).join('')}</select>`)+L('Color o consistencia',I('e-note',r.note||''))+L('Cuándo',W);
  else if(c==='sleeps')f=L('Inicio',I('e-a',loc(r.s),'datetime-local'))+L('Fin (vacío = durmiendo)',I('e-b',r.e?loc(r.e):'','datetime-local'));
  else if(c==='growth')f=L('Peso (kg)',I('e-kg',isNaN(r.kg)?'':r.kg,'number',"step='0.01' inputmode='decimal'"))+L('Talla (cm)',I('e-cm',isNaN(r.cm)?'':r.cm,'number',"step='0.1' inputmode='decimal'"))+L('Fecha',I('e-d',loc(r.t).slice(0,10),'date'));
  else f=L('Texto',`<textarea id='e-t' rows='4'>${esc(r.text)}</textarea>`);
  return`<div class='sheet'><div><b>Editar</b>${f}<div class='grid'><button class='btn ghost' data-a='ecancel'>Cancelar</button><button class='btn' data-a='esave'>Guardar</button></div></div></div>`}
 const VIEWS={home,log,ped,rem,memo};
-function render(keep){const y=scrollY,v={};if(keep)document.querySelectorAll('#app [id]').forEach(i=>{if('value' in i)v[i.id]=i.value});$('#app').innerHTML=pill()+VIEWS[T]()+editor();if(keep)for(const k in v){const i=document.getElementById(k);if(i&&'value' in i)i.value=v[k]}
- $("#nav").innerHTML=[["home","🏠","Inicio"],["log","📝","Registro"],["ped","🩺","Pediatra"],["rem","🔔","Avisos"],["memo","🗒️","Notas"]].map(([k,i,l])=>`<button data-a="tab" data-v="${k}" class="${T===k?"on":""}"><span>${i}</span>${l}</button>`).join("");scrollTo(0,y)}
+function render(keep){const y=scrollY,v={};if(keep)document.querySelectorAll('#app [id]').forEach(i=>{if('value' in i)v[i.id]=i.value});$('#app').innerHTML=pill()+VIEWS[T]()+editor()+profSheet();if(keep)for(const k in v){const i=document.getElementById(k);if(i&&'value' in i)i.value=v[k]}
+ $("#nav").innerHTML=[["home","🏠","Inicio"],["log","📝","Registro"],["ped","🩺","Pediatra"],["rem","🔔","Avisos"],["memo","🗒️","Notas"]].map(([k,i,l])=>`<button data-a="tab" data-v="${k}" class="${T===k?"on":""}"><span>${ico(k)}</span>${l}</button>`).join("");scrollTo(0,y)}
 const go=()=>{save();render()};
 const ts=id=>$(id).value?new Date($(id).value).getTime():Date.now();
 
 const H={
- tab:b=>{T=b.dataset.v;QD=false;scrollTo(0,0);render()},
- side:b=>{if(S.timer.start==null){setT({...S.timer,side:b.dataset.v});go()}},
- tgo:()=>{const t={...S.timer};if(t.at){t.acc=el();t.at=null}else{if(t.start==null)t.start=Date.now();t.at=Date.now()}setT(t);go()},
- treset:()=>{setT({side:S.timer.side,acc:0,at:null,start:null});go()},
- tsave:()=>{const t=S.timer,acc=el();if(acc>=1)put('feeds',{id:uid(),t:t.start,kind:'breast',side:t.side,dur:acc});setT({side:t.side,acc:0,at:null,start:null});go()},
+ tab:b=>{T=b.dataset.v;QD=false;scrollTo(0,0);render();const a=$('#app');a.classList.remove('fx');void a.offsetWidth;a.classList.add('fx')},
+ theme:b=>{try{localStorage.setItem('milan:theme',b.dataset.v)}catch(e){}applyTheme();render()},
+ side:b=>{const v=b.dataset.v,t={...S.timer};if(v===t.side)return;t[t.side]=tsec(t.side);t.acc=0;t.at=t.at?Date.now():null;t.side=v;setT(t);go()},
+ tgo:()=>{const t={...S.timer};if(t.at){t[t.side]=tsec(t.side);t.acc=0;t.at=null}else{if(t.start==null)t.start=Date.now();t.at=Date.now()}setT(t);go()},
+ treset:()=>{setT({side:S.timer.side,L:0,R:0,acc:0,at:null,start:null});go()},
+ tsave:()=>{const t=S.timer,L=tsec('L'),R=tsec('R'),tot=L+R;if(tot>=1){const r={id:uid(),t:t.start,kind:'breast',dur:tot};if(L>=1&&R>=1){r.side='B';r.dL=L;r.dR=R}else r.side=L>=1?'L':'R';put('feeds',r)}setT({side:t.side,L:0,R:0,acc:0,at:null,start:null});go()},
+ prof:()=>{PROF=true;render()},
+ pcancel:()=>{PROF=false;render()},
+ psave:()=>{S.profile.name=$('#p-n').value.trim()||'Milán';S.profile.birth=$('#p-b').value||'';saveProf();PROF=false;go()},
  qd:()=>{QD=!QD;render()},
  dq:b=>{put('diapers',{id:uid(),t:Date.now(),kind:b.dataset.v,note:''});QD=false;go()},
  sleept:()=>{const o=S.sleeps.find(s=>!s.e);if(o)put('sleeps',{...o,e:Date.now()});else put('sleeps',{id:uid(),s:Date.now(),e:null});go()},
@@ -227,7 +253,8 @@ const H={
  edit:b=>{EDIT={c:b.dataset.ty,id:b.dataset.id};render()},
  ecancel:()=>{EDIT=null;render()},
  esave:()=>{if(!EDIT)return;const{c,id}=EDIT,r=S[c].find(x=>String(x.id)===id);if(!r){EDIT=null;go();return}const v=i=>document.getElementById(i).value,tm=(i,d)=>v(i)?new Date(v(i)).getTime():d;let n={...r};
-  if(c==='feeds'){n.t=tm('e-when',r.t);if(r.kind==='breast'){const m=+v('e-min');if(!m)return;n.side=v('e-side');n.dur=m*60}else{const ml=+v('e-ml');if(!ml)return;n.ml=ml}}
+  if(c==='feeds'&&r.side==='B'){n.t=tm('e-when',r.t);n.dL=(+v('e-l')||0)*60;n.dR=(+v('e-r')||0)*60;n.dur=n.dL+n.dR}
+  else if(c==='feeds'){n.t=tm('e-when',r.t);if(r.kind==='breast'){const m=+v('e-min');if(!m)return;n.side=v('e-side');n.dur=m*60}else{const ml=+v('e-ml');if(!ml)return;n.ml=ml}}
   else if(c==='diapers'){n.t=tm('e-when',r.t);n.kind=v('e-kind');n.note=v('e-note').trim()}
   else if(c==='sleeps'){const a=tm('e-a',r.s),b=tm('e-b',null);if(b&&b<=a){toast('El fin debe ser posterior al inicio');return}n.s=a;n.e=b}
   else if(c==='growth'){n.kg=+v('e-kg')||'—';n.cm=+v('e-cm')||'—';n.t=v('e-d')?new Date(v('e-d')+'T12:00').getTime():r.t}
@@ -252,7 +279,7 @@ document.addEventListener("change",e=>{const t=e.target,c=t.dataset.c;if(!c)retu
  else if(c==="vtog"){S.vax[+t.dataset.i].done=t.checked;if(DB)wr(DB.doc('vax/v'+t.dataset.i).set({done:t.checked}))}
  else{S.cfg[c]=t.type==="checkbox"?t.checked:t.value;setCfg()}
  go()});
-let n=0;setInterval(()=>{const c=$("#clk");if(c)c.textContent=clock(el());if(++n%30===0&&(T==="home"||T==="rem")&&!QD)soft()},1000);
+let n=0;setInterval(()=>{const c=$("#clk");if(c){c.textContent=clock(el());const l=$("#tL"),r=$("#tR");if(l)l.textContent=clock(tsec("L"));if(r)r.textContent=clock(tsec("R"))}if(++n%30===0&&(T==="home"||T==="rem")&&!QD)soft()},1000);
 const pill=()=>{const m={on:['☁️','Sincronizado'],off:['📴','Solo este teléfono · configura el código familiar en Avisos'],ro:['👀','Solo lectura · pide acceso de editor'],wait:['⏳','Conectando…']}[SYNC];const imp=SYNC==='on'&&['feeds','diapers','sleeps','growth','notes'].some(c=>LOCAL[c].length)?`<div class="alert"><span>Hay datos guardados solo en este teléfono.</span><button class="mini" data-a="imp">Importar</button></div>`:'';return`<div class="mut" style="text-align:right;font-size:12px">${m[0]} ${m[1]}</div>${imp}`};
 const soft=()=>{const a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))pend=true;else render(true)};
 document.addEventListener('focusout',()=>{if(pend){pend=false;setTimeout(()=>render(true),80)}});
@@ -270,6 +297,7 @@ const DEFT={side:'L',acc:0,at:null,start:null};
  db.collection('vax').onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=!!d.data().done);S.vax.forEach((v,i)=>v.done=!!m['v'+i]);soft()},er);
  db.doc('meta/timer').onSnapshot(s=>{S.timer=s.exists?{...DEFT,...s.data()}:{...DEFT};soft()},er);
  db.doc('meta/cfg').onSnapshot(s=>{if(s.exists)S.cfg={...S.cfg,...s.data()};soft()},er);
+ db.doc('meta/profile').onSnapshot(s=>{if(s.exists)S.profile={...S.profile,...s.data()};soft()},er);
  db.doc('meta/seen').onSnapshot(s=>{S.seen=s.exists?{...s.data()}:{};soft()},er);
  render();
 })();
