@@ -197,6 +197,24 @@ const srt=()=>MV.sort==='old'?[...S.moments].sort((a,b)=>a.t-b.t):MV.sort==='man
 const flt=()=>MV.cat!=='all'||MV.mon!=='all'||MV.q;
 const arrows=m=>MV.sort==='man'&&!flt()?`<div class="mv"><button class="x" data-a="mmove" data-id="${m.id}" data-v="-1" aria-label="Subir">${ico('up')}</button><button class="x" data-a="mmove" data-id="${m.id}" data-v="1" aria-label="Bajar">${ico('down')}</button></div>`:'';
 const agoCard=()=>{const pick=mo=>{const c=new Date();c.setMonth(c.getMonth()-mo);const g=c.getTime(),w=3*864e5,d=x=>Math.abs(x.t-g),m=S.moments.filter(x=>d(x)<=w).sort((a,b)=>d(a)-d(b))[0];if(m)return{t:m.t,title:m.title,id:m.id,img:(mPh(m)[0]||{}).thumb,a:'mopen'};const p=S.photos.filter(x=>d(x)<=w).sort((a,b)=>d(a)-d(b))[0];return p?{t:p.t,title:'Foto del álbum',id:p.id,img:p.thumb,a:'vopen'}:null},y=pick(1),x=y||pick(12);if(!x)return'';return`<button class="tlc" style="margin-bottom:12px" data-a="${x.a}" data-id="${x.id}">${x.img?`<img src="${x.img}" alt="">`:''}<div class="mut">${ico('clock')} Hace ${y?'un mes':'un año'} · ${dd(x.t)}</div><b>${esc(x.title)}</b></button>`};
+const P=()=>({every:S.cfg.every||3,start:'06:00',side:'L',min:'',note:'',...(S.cfg.plan||{})});
+const slots=()=>{const p=P(),n=Math.max(1,Math.floor(24/p.every+1e-9)),[h,m]=p.start.split(':').map(Number),base=new Date();base.setHours(h,m,0,0);return Array.from({length:n},(_,i)=>({t:base.getTime()+i*p.every*36e5,side:(i%2===0)===(p.side==='L')?'izquierdo':'derecho'}))};
+const planText=()=>{const p=P(),sl=slots(),n=S.profile.name||'Milán';return['Plan de lactancia de '+n,'Cada '+p.every+' h · desde las '+p.start+' · '+sl.length+' tomas en 24 h','',...sl.map(s=>hm(s.t)+' · pecho '+s.side),p.min?'\nMinutos por pecho: '+p.min:'',p.note?'\nIndicación del pediatra: '+p.note:'','\n(Guía de horarios: '+n+' puede pedir antes o después.)'].filter(x=>x!=='').join('\n')};
+const icsEsc=t=>String(t).replace(/\\/g,'\\\\').replace(/[,;]/g,m=>'\\'+m).replace(/\n/g,'\\n');
+const icsFold=l=>{let o='';while(l.length>73){o+=l.slice(0,73)+'\r\n ';l=l.slice(73)}return o+l};
+const icsT=ts=>{const d=new Date(ts),p=n=>String(n).padStart(2,'0');return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'T'+p(d.getHours())+p(d.getMinutes())+'00'};
+const planIcs=()=>{const p=P(),sl=slots(),n=S.profile.name||'Milán',even=sl.length%2===0,dur=(+p.min?+p.min*2:20)*6e4,stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+ const ev=sl.map((s,i)=>['BEGIN:VEVENT','UID:milan-plan-'+i+'@milan-app','DTSTAMP:'+stamp,'DTSTART:'+icsT(s.t),'DTEND:'+icsT(s.t+dur),'RRULE:FREQ=DAILY','SUMMARY:'+icsEsc('Toma de '+n+(even?' · pecho '+s.side:'')),'DESCRIPTION:'+icsEsc('Guía de horarios del plan de lactancia. '+n+' puede pedir antes o después.'+(even?'':' Alternar el pecho de inicio.')+(p.note?' Indicación del pediatra: '+p.note:'')),'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:'+icsEsc('Toma de '+n),'TRIGGER:PT0M','END:VALARM','END:VEVENT'].map(icsFold).join('\r\n'));
+ return['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Milan//Plan de lactancia//ES','CALSCALE:GREGORIAN',...ev,'END:VCALENDAR'].join('\r\n')+'\r\n'};
+const planCard=()=>{const p=P(),sl=slots(),day0=new Date().toDateString();
+return`<h2>Plan de lactancia</h2><div class="card"><p class="mut" style="margin:0 0 10px">Arma una guía de horarios con lo que te indicó el pediatra. ${esc(S.profile.name||'Milán')} puede pedir antes o después: manda siempre su hambre. No es una recomendación médica.</p>
+<label>Cada cuánto</label><select data-c="pl_every">${[2,2.5,3,3.5,4].map(v=>`<option value="${v}"${+p.every===v?' selected':''}>${v} h</option>`).join('')}</select>
+<div class="grid"><div><label>Primera toma</label><input type="time" data-c="pl_start" value="${p.start}"></div><div><label>Empezar por</label><select data-c="pl_side"><option value="L"${p.side==='L'?' selected':''}>Izquierdo</option><option value="R"${p.side==='R'?' selected':''}>Derecho</option></select></div></div>
+<label>Minutos por pecho (si te lo indicaron)</label><input type="number" inputmode="numeric" data-c="pl_min" value="${p.min}">
+<label>Indicación del pediatra (opcional)</label><textarea rows="2" data-c="pl_note">${esc(p.note||'')}</textarea>
+<div class="mut" style="margin:4px 0">${sl.length} tomas en 24 h · alternando el pecho de inicio</div>
+${sl.map(s=>{const done=S.feeds.some(f=>Math.abs(f.t-s.t)<=27e5);return`<div class="item"><span class="ic" style="color:${done?'var(--ok)':'var(--mut)'}">${ico(done?'check':'clock')}</span><div class="t"><b>${hm(s.t)}</b>${new Date(s.t).toDateString()!==day0?' (día siguiente)':''} · pecho ${s.side}${p.min?' · '+p.min+' min por pecho':''}</div></div>`}).join('')}
+<button class="btn" data-a="plcal" style="margin-top:10px">${ico('calendar')} Añadir al Calendario del iPhone</button><p class="mut" style="font-size:12px;margin:6px 0 10px">Crea una alarma diaria en cada horario, que suena aunque la app esté cerrada. Si cambias el plan, vuelve a añadirlo.</p><div class="grid"><button class="btn ghost" data-a="plshare">Compartir plan</button><button class="btn ghost" data-a="plcopy">Copiar</button></div></div>`};
 function log(){const sub=`<div class="seg">${[["feed","Comida"],["diaper","Pañal"],["sleep","Sueño"]].map(([k,l])=>`<button data-a="rs" data-v="${k}" class="${RS===k?"on":""}">${ico({feed:"bottle",diaper:"diaper",sleep:"moon"}[k])} ${l}</button>`).join("")}</div>`;
  let f="";
  if(RS==="feed")f=`<div class="chips"><button data-a="rk" data-v="breast" class="${RK==="breast"?"on":""}">Lactancia</button><button data-a="rk" data-v="bottle" class="${RK==="bottle"?"on":""}">Biberón</button></div>
@@ -218,7 +236,7 @@ function report(){const d=Date.now()-864e5,fs=S.feeds.filter(x=>x.t>d),dp=S.diap
  "\nVacunas: "+vd+" de "+S.vax.length+" aplicadas"].filter(x=>x!==""||0).join("\n")}
 
 function ped(){const gs=desc(S.growth,"t");
- return`<h1>Pediatra</h1><p class="sub">Consultas, medidas y dudas</p>${visits()}
+ return`<h1>Pediatra</h1><p class="sub">Consultas, medidas y dudas</p>${visits()}${planCard()}
  <h2>Peso y talla</h2><div class="card"><div class="grid"><div><label>Peso (kg)</label><input id="g-kg" type="number" step="0.01" inputmode="decimal"></div><div><label>Talla (cm)</label><input id="g-cm" type="number" step="0.1" inputmode="decimal"></div></div>
  <label>Fecha</label><input id="g-d" type="date" value="${loc(Date.now()).slice(0,10)}"><button class="btn" data-a="gadd">Agregar medición</button>
  ${gs.map(g=>`<div class="item"><div class="t"><b>${g.kg} kg · ${g.cm} cm</b><div class="mut">${new Date(g.t).toLocaleDateString("es")}</div></div><button class='x' data-a='edit' data-ty='growth' data-id='${g.id}' aria-label='Editar'>${ico('edit')}</button><button class="x" data-a="del" data-ty="growth" data-id="${g.id}">${ico('trash')}</button></div>`).join("")}</div>
@@ -356,6 +374,12 @@ const H={
  remdone:b=>{S.seen[b.dataset.k]=1;setSeen();go()},
  bdsave:b=>{put('moments',{id:'auto-'+b.dataset.k,t:Date.now(),type:'party',title:(S.profile.name||'Milán')+' cumple '+b.dataset.l,text:'',photos:[],created:Date.now(),auto:b.dataset.k,...nord()});toast('Guardado en Recuerdos');go()},
  mmove:b=>{const full=srt(),i=full.findIndex(m=>m.id===b.dataset.id),j=i+ +b.dataset.v;if(i<0||j<0||j>=full.length)return;const a=full[i];full[i]=full[j];full[j]=a;full.forEach((m,k)=>{if(m.ord!==k)put('moments',{...m,ord:k})});go()},
+ plcal:async()=>{const ics=planIcs(),f=new File([ics],'plan-lactancia.ics',{type:'text/calendar'});
+  try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Plan de lactancia'});toast('Abre el archivo y pulsa «Añadir todo»');return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{if(window.open('data:text/calendar;charset=utf-8,'+encodeURIComponent(ics),'_blank'))return}catch(e){}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='plan-lactancia.ics';document.body.appendChild(a);a.click();a.remove()}catch(e){toast('No se pudo generar el archivo')}},
+ plshare:async()=>{const text=planText();try{if(navigator.share){await navigator.share({text});return}}catch(e){return}window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank")},
+ plcopy:async b=>{try{await navigator.clipboard.writeText(planText());b.textContent='¡Copiado!'}catch(e){b.textContent='No se pudo copiar'}},
  famset:()=>{const v=$('#fam-in').value.trim().replace(/[^\w-]/g,'');if(v.length<12){toast('El código debe tener al menos 12 caracteres');return}localStorage.setItem('milan:fam',v);location.reload()},
  famnew:()=>{if(FAM&&!confirm('Se creará un código nuevo y dejarán de compartir datos con el anterior. ¿Continuar?'))return;const a=crypto.getRandomValues(new Uint8Array(20));localStorage.setItem('milan:fam',[...a].map(x=>x.toString(36).padStart(2,'0')).join(''));location.reload()},
  famcopy:async b=>{try{await navigator.clipboard.writeText(FAM);b.textContent='¡Copiado!'}catch(e){b.textContent='Mantén pulsado el código para copiarlo'}},
@@ -367,6 +391,7 @@ const H={
 document.addEventListener("click",e=>{const b=e.target.closest("[data-a]");if(b&&H[b.dataset.a])H[b.dataset.a](b)});
 document.addEventListener("change",e=>{const t=e.target,c=t.dataset.c;if(!c)return;
  if(c==="ntog"){const n=S.notes.find(x=>String(x.id)===t.dataset.id);if(n)put('notes',{...n,done:t.checked})}
+ else if(c.startsWith("pl_")){S.cfg.plan={...(S.cfg.plan||{}),[c.slice(3)]:t.type==="number"?(+t.value||""):t.value};setCfg()}
  else if(c==="remon"){const r=(S.cfg.rems||[]).find(x=>x.id===t.dataset.id);if(r){r.on=t.checked;setCfg()}}
  else if(c==="vtog"){S.vax[+t.dataset.i].done=t.checked;if(DB)wr(DB.doc('vax/v'+t.dataset.i).set({done:t.checked}))}
  else{S.cfg[c]=t.type==="checkbox"?t.checked:t.value;setCfg()}
