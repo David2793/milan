@@ -108,7 +108,8 @@ const sleepToday=()=>S.sleeps.reduce((a,s)=>a+Math.max(0,Math.min(s.e||Date.now(
 
 function alerts(){const o=[],now=Date.now(),c=S.cfg,lf=desc(S.feeds,"t")[0];
  if(c.d3on){const[h,m]=c.d3.split(":").map(Number),d=new Date();d.setHours(h,m,0,0);if(now>=d.getTime()&&!S.seen[loc(now).slice(0,10)])o.push("<span>"+ico("pill")+" Vitamina D3 de hoy</span><button class=mini data-a=d3done>Hecho</button>")}
- S.visits.filter(v=>v.next>now&&v.next-now<864e5).forEach(v=>o.push(ico('calendar')+' Consulta'+(v.doc?' con '+esc(v.doc):'')+' — '+fdt(v.next)));
+ S.visits.filter(v=>v.status==='scheduled'&&v.t>now&&v.t-now<864e5).forEach(v=>o.push(ico('calendar')+' Consulta'+(v.doc?' con '+esc(v.doc):'')+' — '+fdt(v.t)));
+ S.visits.filter(v=>v.status==='scheduled'&&v.t<now).forEach(v=>o.push('<span>'+ico('calendar')+' ¿Asistieron a la consulta del '+fdt(v.t)+'?</span><button class=mini data-a=vatt data-id='+v.id+'>Registrar</button>'));
  (c.rems||[]).filter(r=>r.on).forEach(r=>{const[h,m]=r.time.split(':').map(Number),d=new Date();d.setHours(h,m,0,0);const k=loc(now).slice(0,10)+r.id;if(now>=d.getTime()&&!S.seen[k])o.push('<span>'+ico('bell')+' '+esc(r.title)+'</span><button class=mini data-a=remdone data-k='+k+'>Hecho</button>')});
  if(c.appt){const t=new Date(c.appt).getTime();if(t>now&&t-now<864e5)o.push(ico("calendar")+" Cita médica"+(c.apptNote?" · "+esc(c.apptNote):"")+" — "+fdt(t))}
  return o.map(x=>'<div class="alert">'+x+"</div>").join("")}
@@ -183,10 +184,12 @@ function hist(){const[a,b,n]=per(),inr=t=>t>=a&&t<b,days=Array.from({length:n},(
  <div class="card"><div class="grid" style="margin-bottom:8px"><div><span class="mut">Tomas</span><b style="display:block;font-size:24px">${F.length}</b></div><div><span class="mut">Pañales</span><b style="display:block;font-size:24px">${D.length}</b><span class="mut">${D.filter(x=>x.kind!=='poop').length} mojados · ${D.filter(x=>x.kind!=='pee').length} sucios</span></div></div><span class="mut">Sueño</span><b style="display:block;font-size:20px">${slh>0?spoken(slh*3600):'Todavía no hay registros'}</b>
  ${n>1?`<div style="margin-top:12px">${sg(HM,'hmet',[['f','Tomas'],['p','Pañales'],['s','Sueño']])}${chart(ser,days)}</div>`:''}</div>
  <div class="card">${rows||'<span class="mut">Todavía no hay registros en este período.</span>'}</div>`}
-const visits=()=>{const up=S.visits.filter(v=>v.next&&v.next>Date.now()).sort((x,y)=>x.next-y.next),past=desc(S.visits,'t');
- return`<h2>Consultas</h2><div class="card"><label>Profesional</label><input id="v-doc" placeholder="Nombre del pediatra"><label>Fecha y hora</label><input id="v-dt" type="datetime-local" value="${loc(Date.now())}"><div class="grid"><div><label>Peso (kg)</label><input id="v-kg" type="number" step="0.01" inputmode="decimal"></div><div><label>Talla (cm)</label><input id="v-cm" type="number" step="0.1" inputmode="decimal"></div></div><label>Observaciones</label><textarea id="v-ob" rows="3"></textarea><label>Próxima consulta (opcional)</label><input id="v-nx" type="datetime-local"><button class="btn" data-a="vadd">Guardar consulta</button></div>
- ${up.length?`<div class="card" style="background:var(--warn)"><b>Próximas consultas</b>${up.map(v=>`<div class="mut">${fdt(v.next)}${v.doc?' · '+esc(v.doc):''}</div>`).join('')}</div>`:''}
- ${past.length?`<div class="card"><b>Controles anteriores</b>${past.map(v=>`<div class="item"><div class="t"><b>${fdt(v.t)}</b>${v.doc?' · '+esc(v.doc):''}<div class="mut">${[v.kg?v.kg+' kg':'',v.cm?v.cm+' cm':''].filter(Boolean).join(' · ')}</div>${v.obs?`<div style="white-space:pre-wrap">${esc(v.obs)}</div>`:''}</div><button class="x" data-a="edit" data-ty="visits" data-id="${v.id}" aria-label="Editar">${ico('edit')}</button><button class="x" data-a="del" data-ty="visits" data-id="${v.id}" aria-label="Borrar">${ico('trash')}</button></div>`).join('')}</div>`:''}`};
+const migVisits=()=>{S.visits.filter(v=>v.next&&!v.nextMig&&!v.status).forEach(v=>{if(!S.visits.some(x=>x.id==='n'+v.id))put('visits',{id:'n'+v.id,t:v.next,doc:v.doc||'',motive:'',status:'scheduled',created:Date.now()});put('visits',{...v,nextMig:true})})};
+const visits=()=>{const now=Date.now(),sched=S.visits.filter(v=>v.status==='scheduled').sort((a,b)=>a.t-b.t),done=desc(S.visits.filter(v=>v.status!=='scheduled'),'t'),btns=v=>`<button class="x" data-a="edit" data-ty="visits" data-id="${v.id}" aria-label="Editar">${ico('edit')}</button><button class="x" data-a="del" data-ty="visits" data-id="${v.id}" aria-label="Borrar">${ico('trash')}</button>`;
+ return`<h2>Próximas consultas</h2><div class="card">${sched.length?sched.map(v=>`<div class="item"><button class="round s g" style="width:42px;height:42px;flex:none" data-a="vatt" data-id="${v.id}" aria-label="Marcar como realizada">${ico('check')}</button><div class="t"><b>${fdt(v.t)}</b>${v.doc?' · '+esc(v.doc):''}${v.motive?`<div class="mut">${esc(v.motive)}</div>`:''}${v.t<now-108e5?'<div style="color:var(--bad);font-size:13px">Ya pasó: toca ✓ si asistieron</div>':''}</div>${btns(v)}</div>`).join(''):'<span class="mut">No hay consultas programadas.</span>'}
+ <div style="border-top:1px solid var(--line);margin-top:10px;padding-top:6px"><label>Programar una consulta</label><input id="s-dt" type="datetime-local"><input id="s-doc" placeholder="Profesional (opcional)"><input id="s-mo" placeholder="Motivo (opcional)"><button class="btn" data-a="sadd">Programar</button></div></div>
+ <h2>Consultas realizadas</h2><div class="card">${done.length?done.map(v=>`<div class="item"><span class="ic" style="color:var(--ok)">${ico('check')}</span><div class="t"><b>${fdt(v.t)}</b>${v.doc?' · '+esc(v.doc):''}<div class="mut">${[v.kg?v.kg+' kg':'',v.cm?v.cm+' cm':''].filter(Boolean).join(' · ')}</div>${v.obs?`<div style="white-space:pre-wrap">${esc(v.obs)}</div>`:''}</div>${btns(v)}</div>`).join(''):'<span class="mut">Todavía no hay consultas registradas.</span>'}
+ <details style="margin-top:10px"><summary style="font-weight:600">Registrar una consulta que ya ocurrió</summary><label>Profesional</label><input id="v-doc" placeholder="Nombre del pediatra"><label>Fecha y hora</label><input id="v-dt" type="datetime-local" value="${loc(Date.now())}"><div class="grid"><div><label>Peso (kg)</label><input id="v-kg" type="number" step="0.01" inputmode="decimal"></div><div><label>Talla (cm)</label><input id="v-cm" type="number" step="0.1" inputmode="decimal"></div></div><label>Observaciones</label><textarea id="v-ob" rows="3"></textarea><button class="btn" data-a="vadd">Guardar consulta</button></details></div>`};
 const remsCard=()=>{const R=S.cfg.rems||[];return`<div class="card"><b>${ico('bell')} Otros recordatorios</b><p class="mut" style="margin:6px 0">Para medicación indicada por el pediatra, mediciones u otros eventos. Tú decides qué anotar: la app no recomienda tratamientos.</p>${R.map(r=>`<div class="item"><input class="chk" type="checkbox" data-c="remon" data-id="${r.id}" ${r.on?'checked':''}><div class="t">${esc(r.title)}<div class="mut">todos los días · ${r.time}</div></div><button class="x" data-a="remdel" data-id="${r.id}" aria-label="Borrar">${ico('trash')}</button></div>`).join('')}<label>Qué recordar</label><input id="r-t" placeholder="ej. medicamento indicado, pesar a Milán"><label>Hora</label><input id="r-h" type="time" value="09:00"><button class="btn" data-a="remadd">Agregar recordatorio</button></div>`};
 const dki=k=>k==='pee'?ico('drop'):k==='poop'?ico('diaper'):ico('drop')+ico('diaper');
 const bday=()=>{const b=S.profile.birth;if(!b)return null;const B=new Date(b+'T12:00'),n=new Date(),dim=new Date(n.getFullYear(),n.getMonth()+1,0).getDate(),m=(n.getFullYear()-B.getFullYear())*12+n.getMonth()-B.getMonth();if(m<1||n.getDate()!==Math.min(B.getDate(),dim))return null;return{m,key:'bd'+m}};
@@ -302,9 +305,9 @@ function editor(){if(!EDIT)return'';const c=EDIT.c,r=S[c].find(x=>String(x.id)==
  else if(c==='diapers')f=L('Tipo',`<select id='e-kind'>${Object.entries(DK).map(([k,v])=>`<option value='${k}'${r.kind===k?' selected':''}>${v.join(' ')}</option>`).join('')}</select>`)+L('Color o consistencia',I('e-note',r.note||''))+L('Cuándo',W);
  else if(c==='sleeps')f=L('Inicio',I('e-a',loc(r.s),'datetime-local'))+L('Fin (vacío = durmiendo)',I('e-b',r.e?loc(r.e):'','datetime-local'));
  else if(c==='growth')f=L('Peso (kg)',I('e-kg',isNaN(r.kg)?'':r.kg,'number',"step='0.01' inputmode='decimal'"))+L('Talla (cm)',I('e-cm',isNaN(r.cm)?'':r.cm,'number',"step='0.1' inputmode='decimal'"))+L('Fecha',I('e-d',loc(r.t).slice(0,10),'date'));
- else if(c==='visits')f=L('Profesional',I('e-doc',r.doc||''))+L('Fecha y hora',I('e-dt',loc(r.t),'datetime-local'))+L('Peso (kg)',I('e-kg',r.kg||'','number',"step='0.01' inputmode='decimal'"))+L('Talla (cm)',I('e-cm',r.cm||'','number',"step='0.1' inputmode='decimal'"))+L('Observaciones',`<textarea id='e-ob' rows='3'>${esc(r.obs||'')}</textarea>`)+L('Próxima consulta',I('e-nx',r.next?loc(r.next):'','datetime-local'));
+ else if(c==='visits'){const sch=r.status==='scheduled'&&!EDIT.attend;f=L('Profesional',I('e-doc',r.doc||''))+L(EDIT.attend?'Fecha y hora real':'Fecha y hora',I('e-dt',loc(r.t),'datetime-local'))+(sch?L('Motivo (opcional)',I('e-mo',r.motive||'')):L('Peso (kg)',I('e-kg',r.kg||'','number',"step='0.01' inputmode='decimal'"))+L('Talla (cm)',I('e-cm',r.cm||'','number',"step='0.1' inputmode='decimal'"))+L('Observaciones',`<textarea id='e-ob' rows='3'>${esc(r.obs||'')}</textarea>`))}
  else f=L('Texto',`<textarea id='e-t' rows='4'>${esc(r.text)}</textarea>`);
- return`<div class='sheet'><div><b>Editar</b>${f}<div class='grid'><button class='btn ghost' data-a='ecancel'>Cancelar</button><button class='btn' data-a='esave'>Guardar</button></div></div></div>`}
+ return`<div class='sheet'><div><b>${EDIT.attend?'Consulta realizada':'Editar'}</b>${f}<div class='grid'><button class='btn ghost' data-a='ecancel'>Cancelar</button><button class='btn' data-a='esave'>Guardar</button></div></div></div>`}
 const VIEWS={home,log,rec,ped,rem,memo};
 function render(keep){const y=scrollY,v={};if(keep)document.querySelectorAll('#app [id]').forEach(i=>{if('value' in i)v[i.id]=i.value});$('#app').innerHTML=pill()+VIEWS[T]()+editor()+profSheet()+mSheets();if(keep)for(const k in v){const i=document.getElementById(k);if(i&&'value' in i)i.value=v[k]}
  $("#nav").innerHTML=[["home","","Inicio"],["log","","Registro"],["rec","","Recuerdos"],["ped","","Pediatra"],["rem","","Avisos"],["memo","","Notas"]].map(([k,i,l])=>`<button data-a="tab" data-v="${k}" class="${T===k?"on":""}"><span>${ico(k)}</span>${l}</button>`).join("");scrollTo(0,y)}
@@ -341,7 +344,7 @@ const H={
   else if(c==='diapers'){n.t=tm('e-when',r.t);n.kind=v('e-kind');n.note=v('e-note').trim()}
   else if(c==='sleeps'){const a=tm('e-a',r.s),b=tm('e-b',null);if(b&&b<=a){toast('El fin debe ser posterior al inicio');return}n.s=a;n.e=b}
   else if(c==='growth'){n.kg=+v('e-kg')||'—';n.cm=+v('e-cm')||'—';n.t=v('e-d')?new Date(v('e-d')+'T12:00').getTime():r.t}
-  else if(c==='visits'){n.doc=v('e-doc').trim();n.t=tm('e-dt',r.t);n.kg=+v('e-kg')||null;n.cm=+v('e-cm')||null;n.obs=v('e-ob').trim();n.next=tm('e-nx',null);if(n.kg||n.cm)put('growth',{id:'v'+r.id,t:n.t,kg:n.kg||'—',cm:n.cm||'—'})}
+  else if(c==='visits'){const sch=r.status==='scheduled';n.doc=v('e-doc').trim();n.t=tm('e-dt',r.t);if(sch&&!EDIT.attend){n.motive=v('e-mo').trim()}else{n.kg=+v('e-kg')||null;n.cm=+v('e-cm')||null;n.obs=v('e-ob').trim();if(sch){n.status='done';n.attended=Date.now()}if(n.kg||n.cm)put('growth',{id:'v'+r.id,t:n.t,kg:n.kg||'—',cm:n.cm||'—'})}}
   else{const t=v('e-t').trim();if(!t)return;n.text=t}
   put(c,n);EDIT=null;go()},
  bkdl:async()=>{const d=snap(),txt=JSON.stringify(d,null,1),name='milan-copia-'+loc(Date.now()).slice(0,10)+'.json',n=COLS.reduce((a,c)=>a+S[c].length,0);let ok=false;
@@ -368,7 +371,9 @@ const H={
  vdel:()=>{if(!confirm('¿Eliminar esta foto?'))return;const id=MV.vw;rm('photos',id);if(DB)wr(DB.doc('photoData/'+id).delete());S.moments.forEach(m=>{if((m.photos||[]).includes(id))put('moments',{...m,photos:m.photos.filter(x=>x!==id)})});MV.vw=null;go()},
  hp:b=>{HP=b.dataset.v;render()},
  hmet:b=>{HM=b.dataset.v;render()},
- vadd:()=>{const t=ts('#v-dt'),kg=+$('#v-kg').value||null,cm=+$('#v-cm').value||null,nx=$('#v-nx').value?new Date($('#v-nx').value).getTime():null,id=uid();put('visits',{id,t,doc:$('#v-doc').value.trim(),kg,cm,obs:$('#v-ob').value.trim(),next:nx});if(kg||cm)put('growth',{id:'v'+id,t,kg:kg||'—',cm:cm||'—'});go()},
+ vadd:()=>{const t=ts('#v-dt'),kg=+$('#v-kg').value||null,cm=+$('#v-cm').value||null,id=uid();put('visits',{id,t,doc:$('#v-doc').value.trim(),kg,cm,obs:$('#v-ob').value.trim(),status:'done',attended:Date.now()});if(kg||cm)put('growth',{id:'v'+id,t,kg:kg||'—',cm:cm||'—'});go()},
+ sadd:()=>{const d=$('#s-dt').value;if(!d){toast('Elige fecha y hora');return}put('visits',{id:uid(),t:new Date(d).getTime(),doc:$('#s-doc').value.trim(),motive:$('#s-mo').value.trim(),status:'scheduled',created:Date.now()});go()},
+ vatt:b=>{EDIT={c:'visits',id:b.dataset.id,attend:true};render()},
  remadd:()=>{const t=$('#r-t').value.trim();if(!t)return;S.cfg.rems=[...(S.cfg.rems||[]),{id:uid(),title:t,time:$('#r-h').value||'09:00',on:true}];setCfg();go()},
  remdel:b=>{if(!confirm('¿Eliminar este recordatorio?'))return;S.cfg.rems=(S.cfg.rems||[]).filter(r=>r.id!==b.dataset.id);setCfg();go()},
  remdone:b=>{S.seen[b.dataset.k]=1;setSeen();go()},
@@ -405,13 +410,13 @@ const DEFT={side:'L',acc:0,at:null,start:null};
  let user=null,db=null;
  try{user=await claude.use('user')}catch(e){}
  try{db=await claude.use('db')}catch(e){}
- if(!db){SYNC='off';render();return}
+ if(!db){SYNC='off';migVisits();save();render();return}
  DB=db;SYNC='on';
  try{if(user&&(await user.can('data.write'))===false)SYNC='ro'}catch(e){}
  const er=e=>{if(e&&e.code==='revoked'){SYNC='off';DB=null}soft()};
  ['feeds','diapers','sleeps','growth','notes'].forEach(c=>db.collection(c).onSnapshot(s=>{S[c]=s.docs.map(d=>({...d.data(),id:d.id}));soft()},er));
  db.collection('memos').onSnapshot(s=>{S.memos=s.docs.map(d=>({...d.data(),id:d.id}));soft()},er);
- db.collection('visits').onSnapshot(s=>{S.visits=s.docs.map(d=>({...d.data(),id:d.id}));soft()},er);
+ db.collection('visits').onSnapshot(s=>{S.visits=s.docs.map(d=>({...d.data(),id:d.id}));if(SYNC==='on')migVisits();soft()},er);
  db.collection('moments').onSnapshot(s=>{S.moments=s.docs.map(d=>({...d.data(),id:d.id}));soft()},er);
  db.collection('photos').onSnapshot(s=>{S.photos=s.docs.map(d=>({...d.data(),id:d.id}));soft()},er);
  db.collection('vax').onSnapshot(s=>{const m={};s.docs.forEach(d=>m[d.id]=!!d.data().done);S.vax.forEach((v,i)=>v.done=!!m['v'+i]);soft()},er);
